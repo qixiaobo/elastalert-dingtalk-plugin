@@ -59,7 +59,15 @@ class DingTalkAlerter(Alerter):
             "Accept": "application/json;charset=utf-8"
         }
         body = self.create_alert_body(matches)
-        payload = self.get_payload()
+        payload = {
+            "msgtype": self.dingtalk_msgtype,
+            "text": {
+                "content": body
+            },
+            "at": {
+                "isAtAll": self.dingtalk_isAtAll
+            }
+        }
         try:
             response = requests.post(self.dingtalk_webhook_url,
                                      data=json.dumps(payload, cls=DateTimeEncoder),
