@@ -26,18 +26,18 @@ class DingTalkAlerter(Alerter):
         self.dingtalk_msgtype = self.rule.get('dingtalk_msgtype', 'text')
         self.dingtalk_isAtAll = self.rule.get('dingtalk_isAtAll', False)
         self.dingtalk_title = self.rule.get('dingtalk_title', '')
-        self.dingtalk_messageUrl = self.rule.get('dingtalk_messageUrl', 'http://log.f6car.com')
+        self.dingtalk_messageUrl = self.rule.get('log_url', 'http://log.f6car.com')
 
     def format_body(self, body):
         return body.encode('utf8')
 
-    def get_payload(self):
+    def get_payload(self, matches):
 
         if self.dingtalk_msgtype == 'text':
             return {
                 "msgtype": self.dingtalk_msgtype,
                 "text": {
-                    "content": body + self.dingtalk_messageUrl
+                    "content": self.create_alert_body(matches) + self.dingtalk_messageUrl
                 },
                 "at": {
                     "isAtAll": self.dingtalk_isAtAll
@@ -58,16 +58,7 @@ class DingTalkAlerter(Alerter):
             "Content-Type": "application/json",
             "Accept": "application/json;charset=utf-8"
         }
-        body = self.create_alert_body(matches)
-        payload = {
-            "msgtype": self.dingtalk_msgtype,
-            "text": {
-                "content": body
-            },
-            "at": {
-                "isAtAll": self.dingtalk_isAtAll
-            }
-        }
+        payload = self.get_payload(matches)
         try:
             response = requests.post(self.dingtalk_webhook_url,
                                      data=json.dumps(payload, cls=DateTimeEncoder),
