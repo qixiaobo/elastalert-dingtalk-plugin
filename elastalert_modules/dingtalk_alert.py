@@ -59,7 +59,7 @@ class DingTalkAlerter(Alerter):
             "Accept": "application/json;charset=utf-8"
         }
         body = self.create_alert_body(matches)
-        payload = get_payload()
+        payload = self.get_payload()
         try:
             response = requests.post(self.dingtalk_webhook_url,
                                      data=json.dumps(payload, cls=DateTimeEncoder),
